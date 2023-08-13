@@ -7,6 +7,7 @@ const amqp = require('amqplib');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 let rabbitMQConnection;
+const queueName = "MessageQueue";
 
 app.post('/messages', async (req, res) => {
   try {
@@ -24,7 +25,6 @@ app.post('/messages', async (req, res) => {
     };
 
     const channel = await rabbitMQConnection.createChannel();
-    const queueName = v4();
     await channel.assertQueue(queueName, { durable: false });
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
     console.log(`Publishing an Event using RabbitMQ to :${req.body.message}`);
